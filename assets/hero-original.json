@@ -1,0 +1,6 @@
+{
+  "original": "kruppa-menino-storyboard.jpg",
+  "sha256": "16e2054dd82145987eee22de76a5cd7e8c50567ac36aa81615eadd1cbc7583d8",
+  "staticCrop": { "x": 100, "y": 780, "width": 824, "height": 244 },
+  "rollback": "Mudar mode para static em hero-config.js. O ficheiro original e o enquadramento CSS ficam preservados."
+}

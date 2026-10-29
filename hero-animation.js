@@ -33,6 +33,7 @@
   const waveStart = sitStart + .62;
   const duration = waveStart + 1.65;
   const returnDuration = waveStart;
+  const repeatEvery = Math.max(duration + returnDuration, Number(window.KRUPPA_HERO?.repeatEverySeconds) || 30);
 
   function poseAt(t, returning=false) {
     const path=returning?[5,4,3,2,1,0]:[0,1,2,3,4,5];
@@ -101,8 +102,8 @@
     return element;
   };
 
-  Promise.all([loadImage('assets/kruppa-cubos-v1.png'),loadImage('assets/kruppa-menino-poses-v1.png')]).then(([plate,atlas])=>{
-    const scene=svgElement('svg',{'class':'hero-motion-scene',viewBox:'0 0 2172 884',role:'img','aria-label':'O menino salta do K até ao A, senta-se virado para o centro e acena. Ao repetir, regressa ao K antes de brincar outra vez.'});
+  Promise.all([loadImage('assets/kruppa-cubos-rosa-v2.png'),loadImage('assets/kruppa-menino-poses-v1.png')]).then(([plate,atlas])=>{
+    const scene=svgElement('svg',{'class':'hero-motion-scene',viewBox:'0 0 2172 884',role:'img','aria-label':'O menino salta pelos cubos cor-de-rosa do K até ao A, senta-se virado para o centro e acena. Regressa ao K e repete a brincadeira automaticamente a cada 30 segundos.'});
     scene.append(svgElement('image',{href:plate.src,x:0,y:headroom,width:2172,height:724}));
     const shadows=supports.map(point=>svgElement('ellipse',{cx:point.x,cy:point.y-1,rx:55,ry:7,fill:'#1a2b6d',opacity:0}));
     shadows.forEach(shadow=>scene.append(shadow));
@@ -115,11 +116,11 @@
     scene.append(boy); frame.append(scene);
     const controls=document.createElement('div'); controls.className='hero-motion-controls animation-controls';
     const replay=document.createElement('button'); replay.type='button'; replay.className='motion-replay hero-replay';
-    replay.setAttribute('aria-label','Repetir a brincadeira do menino'); replay.innerHTML='↻ <span>Brincar outra vez</span>';
+    replay.setAttribute('aria-label','Pausar animação'); replay.setAttribute('aria-pressed','false');
+    replay.innerHTML='Ⅱ <span>Pausar animação</span>';
     controls.append(replay); root.append(controls);
     let elapsed=0,lastTime=null,running=false,finished=false,visible=false,request=null;
-    let withReturn=false;
-    replay.disabled=true;
+    let withReturn=false,userPaused=false,cycleAge=0,cycleCount=0,repeatTimer=null,waitingSince=null;
     const cycleDuration=()=>duration+(withReturn?returnDuration:0);
 
     function render(t) {
@@ -138,33 +139,56 @@
       scene.dataset.elapsed=t.toFixed(3); scene.dataset.duration=cycleDuration().toFixed(3);
       scene.dataset.route=returning?'regresso':'ida'; scene.dataset.facing=String(state.facing);
       scene.dataset.boyX=point.x.toFixed(2); scene.dataset.boyY=point.y.toFixed(2);
+      scene.dataset.cycle=String(cycleCount); scene.dataset.repeatEvery=String(repeatEvery);
     }
     function pause() {
       running=false;lastTime=null;
       if(request!==null)cancelAnimationFrame(request);
       request=null;
+      if(repeatTimer!==null) {
+        cycleAge+=(performance.now()-waitingSince)/1000;
+        clearTimeout(repeatTimer);repeatTimer=null;waitingSince=null;
+      }
+    }
+    function scheduleNext() {
+      if(repeatTimer!==null||!visible||document.hidden||reduced.matches||userPaused)return;
+      waitingSince=performance.now();
+      repeatTimer=setTimeout(()=>{
+        repeatTimer=null;waitingSince=null;
+        if(!visible||document.hidden||reduced.matches||userPaused)return;
+        elapsed=0;cycleAge=0;finished=false;withReturn=true;cycleCount++;
+        render(0);resume();
+      },Math.max(0,repeatEvery-cycleAge)*1000);
     }
     function tick(now) {
       if(!running)return;
-      if(lastTime!==null)elapsed+=Math.min((now-lastTime)/1000,.05);
+      if(lastTime!==null) {
+        const delta=Math.min((now-lastTime)/1000,.05);
+        elapsed+=delta;cycleAge+=delta;
+      }
       lastTime=now;render(Math.min(elapsed,cycleDuration()));
-      if(elapsed>=cycleDuration()) { finished=true;replay.disabled=false;pause(); }
+      if(elapsed>=cycleDuration()) {
+        finished=true;running=false;lastTime=null;request=null;scheduleNext();
+      }
       else request=requestAnimationFrame(tick);
     }
     function resume() {
-      if(running||finished||!visible||document.hidden||reduced.matches)return;
+      if(running||!visible||document.hidden||reduced.matches||userPaused)return;
+      if(finished){scheduleNext();return;}
       running=true;lastTime=null;request=requestAnimationFrame(tick);
     }
     function displayMode() {
-      const staticMode=reduced.matches;
-      original.hidden=!staticMode; scene.hidden=staticMode; controls.hidden=staticMode;
-      root.classList.toggle('hero-motion-ready',!staticMode);
-      if(staticMode)pause();else resume();
+      original.hidden=true;scene.hidden=false;controls.hidden=reduced.matches;
+      root.classList.add('hero-motion-ready');
+      if(reduced.matches){pause();render(cycleDuration());}
+      else {render(Math.min(elapsed,cycleDuration()));resume();}
     }
     replay.addEventListener('click',()=>{
-      if(!finished)return;
-      pause();elapsed=0;finished=false;withReturn=true;replay.disabled=true;
-      render(0);resume();
+      userPaused=!userPaused;
+      replay.setAttribute('aria-pressed',String(userPaused));
+      replay.setAttribute('aria-label',userPaused?'Retomar animação':'Pausar animação');
+      replay.innerHTML=userPaused?'▷ <span>Retomar animação</span>':'Ⅱ <span>Pausar animação</span>';
+      if(userPaused)pause();else resume();
     });
     document.addEventListener('visibilitychange',()=>document.hidden?pause():resume());
     reduced.addEventListener('change',displayMode);

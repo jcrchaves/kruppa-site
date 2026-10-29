@@ -1,6 +1,9 @@
 # Kruppa — demonstração do site institucional
 
 Versão temporária do site institucional Kruppa, com a paleta e a animação aprovadas.
+O verde da interface é #d6de23. Todos os cubos da animação são cor-de-rosa,
+e a brincadeira repete-se automaticamente a cada 30 segundos enquanto visível.
+O controlo Pausar animação permite interromper e retomar; respeita movimento reduzido.
 Este repositório contém apenas HTML, CSS, JavaScript e as ilustrações do site.
 O logótipo, a galeria e o vídeo continuam a usar os endereços públicos da biblioteca Wix.
 

@@ -15,10 +15,12 @@ Não configurar um domínio personalizado para esta demonstração.
 
 ## Ligações
 
-- Pré-candidatura: https://kflow.kkruppa.com/#manifestacao
+- Pré-candidatura temporária: mailto:geral@kkruppa.com,pedagogia@kkruppa.com
 - Login no rodapé: https://kflow.kkruppa.com/
 
-Estes destinos exigem que o Kflow esteja alojado e que o seu subdomínio esteja activo.
+Os quatro botões de pré-candidatura abrem uma mensagem pré-preenchida para os dois
+endereços. O visitante confirma o envio na sua aplicação de email. O site estático
+não envia mensagens automaticamente. O Login continua a exigir o subdomínio Kflow activo.
 O GitHub Pages publica o site institucional; não executa a plataforma Kflow.
 
 ## Rollback da ilustração

@@ -4,7 +4,7 @@ function closeMenu() { menu.hidden = true; toggle.setAttribute('aria-expanded', 
 toggle.addEventListener('click', () => { const open = toggle.getAttribute('aria-expanded') !== 'true'; menu.hidden = !open; toggle.setAttribute('aria-expanded', String(open)); toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu'); });
 menu.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && !menu.hidden) { closeMenu(); toggle.focus(); } });
-// Login and public applications both use the existing Kflow workflow.
+// Login uses Kflow. Temporary application email links keep their native href.
 // A local development address must never become a live site's destination.
 const localHost = hostname => ['localhost', '127.0.0.1', '[::1]'].includes(hostname);
 let platform = null;

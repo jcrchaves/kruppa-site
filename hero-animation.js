@@ -1,11 +1,20 @@
-// The supplied image remains the fallback and can be restored with hero-config.js.
+// The pink first-frame poster stays visible until all animation assets load.
+// The exact supplied image is fetched only when rollback is explicitly selected.
 // Generated poses keep the raster character; no articulated vector replacement.
 (() => {
   const root = document.querySelector('.hero-still');
   const frame = root?.querySelector('.hero-illustration');
   const original = frame?.querySelector('.hero-still-image');
   const mode = new URLSearchParams(location.search).get('hero') || window.KRUPPA_HERO?.mode;
-  if (!original || mode !== 'animated') return;
+  if (!original) return;
+  if (mode === 'static') {
+    root.classList.add('hero-original-mode');
+    original.src='assets/kruppa-menino-storyboard.jpg';
+    original.width=1024;original.height=1024;
+    original.alt='Imagem original do menino sentado no K, com os cubos coloridos KRUPPA.';
+    return;
+  }
+  if (mode !== 'animated') return;
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const ns = 'http://www.w3.org/2000/svg';
@@ -198,7 +207,8 @@
     },{threshold:[0,.2]});
     observer.observe(root);render(0);displayMode();
   }).catch(error=>{
-    // Asset failure leaves the exact original image in place with no dead controls.
-    console.warn('A ilustração original foi mantida.',error.message);
+    // A failed/slow animation must keep the same pink poster, without a colour flash.
+    original.hidden=false;
+    console.warn('A imagem estática dos cubos rosa foi mantida.',error.message);
   });
 })();

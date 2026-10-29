@@ -125,16 +125,18 @@
 .contact-icon{width:22px;height:22px;flex:none;margin-top:2px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;color:var(--yellow)}
 .contact-details a.contact-row:hover>span{text-decoration:underline;text-underline-offset:4px}
 
-/* Show only the final panel of the supplied artwork, preserving its pixels. */
+/* The default poster matches the first animation frame, including its aspect. */
 .hero-art.hero-still{max-width:600px;width:100%;padding:0;align-self:center}
-.hero-still .art-kicker{margin-bottom:30px}
-.hero-illustration{position:relative;width:112%;margin-inline:-6%;aspect-ratio:824/244;overflow:hidden}
-.hero-still-image{position:absolute;display:block;width:124.271845%;max-width:none;height:auto;left:-12.135922%;bottom:0}
-.hero-still .art-note{margin:24px 0 0}
-@media(max-width:850px){.hero-art.hero-still{max-width:600px}.hero-still .art-kicker{margin-bottom:18px}}
-@media(max-width:540px){.hero-art.hero-still{max-width:none}.hero-illustration{width:100%;margin-inline:0}.hero-still .art-kicker{margin-bottom:14px}.hero-still .art-note{margin-top:16px}}
+.hero-still .art-kicker{margin-bottom:8px}
+.hero-illustration{position:relative;width:112%;margin-inline:-6%;aspect-ratio:2172/884;overflow:hidden}
+.hero-still-image{position:absolute;display:block;width:100%;height:100%;inset:0;object-fit:contain}
+.hero-still .art-note{margin:12px 0 0}
+.hero-original-mode .hero-illustration{aspect-ratio:824/244}
+.hero-original-mode .hero-still-image{width:124.271845%;max-width:none;height:auto;top:auto;right:auto;left:-12.135922%;bottom:0}
+@media(max-width:850px){.hero-art.hero-still{max-width:600px}}
+@media(max-width:540px){.hero-art.hero-still{max-width:none}.hero-illustration{width:100%;margin-inline:0}.hero-still .art-kicker{margin-bottom:2px}.hero-still .art-note{margin-top:12px}}
 
-/* The original image stays available when the animation is disabled or fails. */
+/* Asset failures keep the pink poster; original artwork is explicit rollback. */
 .hero-motion-ready .hero-illustration{aspect-ratio:2172/884}
 .hero-motion-scene{display:block;width:100%;height:100%;overflow:hidden}
 .hero-still-image[hidden],.hero-motion-scene[hidden],.hero-motion-controls[hidden]{display:none}
